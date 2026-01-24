@@ -43,6 +43,30 @@ function renderTasks() {
         renderTasks();
         });
 
+        const editBtn = document.createElement ("button");
+        editBtn.textContent = "✏️"
+        
+        editBtn.addEventListener("click", () =>{
+            const input = document.createElement ("input");
+            input.type = "text";
+            input.value = task.text;
+
+            li.replaceChild(input, span);
+            input.focus();
+
+            input.addEventListener("blur", () => {
+                task.text = input.value.trim() || task.text;
+                saveTasks();
+                renderTasks();
+            });
+
+            input.addEventListener ("keydown", (e) => {
+                if (e.key === "Enter"){
+                    input.blur();
+                }
+            });
+        });
+
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "❌";
 
@@ -53,6 +77,7 @@ function renderTasks() {
         });
 
         li.appendChild(span);
+        li.appendChild(editBtn);
         li.appendChild(deleteBtn);
         taskList.appendChild(li);
     });
