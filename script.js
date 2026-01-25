@@ -3,6 +3,7 @@ const prioritySelect = document.getElementById("prioritySelect");
 const filterSelect = document.getElementById("filterPriority");
 const taskList = document.getElementById("taskList");
 const addTaskBtn = document.getElementById("addTaskBtn");
+const filterStatus = document.getElementById("filterStatus");
 
 let tasks = [];
 
@@ -25,8 +26,26 @@ function renderTasks() {
     );
   }
 
+  if (filterStatus.value === "Pendentes") {
+    filteredTasks = filteredTasks.filter((task) => !task.completed);
+  }
+
+  if (filterStatus.value === "Concluidas") {
+    filteredTasks = filteredTasks.filter((task) => task.completed);
+  }
+
   filteredTasks.forEach((task, index) => {
     const li = document.createElement("li");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.completed;
+
+    checkbox.addEventListener("change", () => {
+      task.completed = checkbox.checked;
+      saveTasks();
+      renderTasks();
+    });
 
     const span = document.createElement("span");
     span.textContent = `${task.text} (${task.priority})`;
@@ -37,6 +56,11 @@ function renderTasks() {
       span.style.color = "orange";
     } else {
       span.style.color = "green";
+    }
+
+    if (task.completed) {
+      span.style.textDecoration = "line-through";
+      span.style.opacity = "0.6";
     }
 
     const editBtn = document.createElement("button");
@@ -60,6 +84,7 @@ function renderTasks() {
       saveBtn.textContent = "💾";
 
       li.innerHTML = "";
+      li.appendChild(checkbox);
       li.appendChild(input);
       li.appendChild(select);
       li.appendChild(saveBtn);
@@ -101,6 +126,7 @@ function addTask() {
   const task = {
     text: taskInput.value,
     priority: prioritySelect.value,
+    completed: false,
   };
 
   tasks.push(task);
@@ -113,6 +139,7 @@ function addTask() {
 
 addTaskBtn.addEventListener("click", addTask);
 filterSelect.addEventListener("change", renderTasks);
+filterStatus.addEventListener("change", renderTasks);
 
 loadTasks();
 renderTasks();
