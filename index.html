@@ -16,7 +16,22 @@
         id="taskInput" 
         placeholder="Digite uma tarefa de estudo"
       >
-      <button id="addTaskBtn">Adicionar Tarefa</button>
+      <select id="prioritySelect">
+        <option value="Alta">Alta</option>
+        <option value="Media" selected>Média</option>
+        <option value="Baixa">Baixa</option>
+      </select>
+
+      <button id="addTaskBtn" type="button">Adicionar Tarefa</button>
+    </div>
+     <div class="filter-area">
+      <label for="filterPriority">Filtrar por prioridade:</label>
+      <select id="filterPriority">
+        <option value="Todas">Todas</option>
+        <option value="Alta">Alta</option>
+        <option value="Media">Média</option>
+        <option value="Baixa">Baixa</option>
+      </select>
     </div>
 
     <ul id="taskList"></ul>

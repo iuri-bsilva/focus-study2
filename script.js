@@ -1,99 +1,118 @@
 const taskInput = document.getElementById("taskInput");
-const addTaskBtn = document.getElementById("addTaskBtn");
+const prioritySelect = document.getElementById("prioritySelect");
+const filterSelect = document.getElementById("filterPriority");
 const taskList = document.getElementById("taskList");
+const addTaskBtn = document.getElementById("addTaskBtn");
 
 let tasks = [];
 
-addTaskBtn.addEventListener("click", () => {
-    const taskText = taskInput.value.trim();
+function loadTasks() {
+  tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+}
 
-    if(taskText === ""){
-        alert("Digite uma tarefa!");
-        return;
-    }
-
-    const task = {
-        id: Date.now(),
-        text: taskText,
-        completed: false
-    };
-
-    tasks.push(task);
-    saveTasks();
-    renderTasks();
-
-    taskInput.value = "";
-});
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 function renderTasks() {
-    taskList.innerHTML = "";
+  taskList.innerHTML = "";
 
-    tasks.forEach (task => {
-        const li = document.createElement("li");
-        const span = document.createElement("span");
-        span.textContent = task.text;
+  let filteredTasks = tasks;
 
-        if (task.completed) {
-            span.classList.add("completed");
-        }
+  if (filterSelect.value !== "Todas") {
+    filteredTasks = tasks.filter(
+      (task) => task.priority === filterSelect.value,
+    );
+  }
 
-        span.addEventListener("click", () => {
-        task.completed = !task.completed;
+  filteredTasks.forEach((task, index) => {
+    const li = document.createElement("li");
+
+    const span = document.createElement("span");
+    span.textContent = `${task.text} (${task.priority})`;
+
+    if (task.priority === "Alta") {
+      span.style.color = "red";
+    } else if (task.priority === "Media") {
+      span.style.color = "orange";
+    } else {
+      span.style.color = "green";
+    }
+
+    const editBtn = document.createElement("button");
+    editBtn.textContent = "✏️";
+
+    editBtn.addEventListener("click", () => {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = task.text;
+
+      const select = document.createElement("select");
+      ["Alta", "Media", "Baixa"].forEach((p) => {
+        const option = document.createElement("option");
+        option.value = p;
+        option.textContent = p;
+        if (p === task.priority) option.selected = true;
+        select.appendChild(option);
+      });
+
+      const saveBtn = document.createElement("button");
+      saveBtn.textContent = "💾";
+
+      li.innerHTML = "";
+      li.appendChild(input);
+      li.appendChild(select);
+      li.appendChild(saveBtn);
+
+      input.focus();
+
+      function saveEdit() {
+        task.text = input.value.trim() || task.text;
+        task.priority = select.value;
         saveTasks();
         renderTasks();
-        });
+      }
+      saveBtn.addEventListener("click", saveEdit);
 
-        const editBtn = document.createElement ("button");
-        editBtn.textContent = "✏️"
-        
-        editBtn.addEventListener("click", () =>{
-            const input = document.createElement ("input");
-            input.type = "text";
-            input.value = task.text;
-
-            li.replaceChild(input, span);
-            input.focus();
-
-            input.addEventListener("blur", () => {
-                task.text = input.value.trim() || task.text;
-                saveTasks();
-                renderTasks();
-            });
-
-            input.addEventListener ("keydown", (e) => {
-                if (e.key === "Enter"){
-                    input.blur();
-                }
-            });
-        });
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "❌";
-
-        deleteBtn.addEventListener("click", () => {
-            tasks = tasks.filter(t=> t.id !== task.id);
-            saveTasks();
-            renderTasks();
-        });
-
-        li.appendChild(span);
-        li.appendChild(editBtn);
-        li.appendChild(deleteBtn);
-        taskList.appendChild(li);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") saveEdit();
+      });
     });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "❌";
+
+    deleteBtn.addEventListener("click", () => {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    });
+
+    li.appendChild(span);
+    li.appendChild(editBtn);
+    li.appendChild(deleteBtn);
+    taskList.appendChild(li);
+  });
 }
 
-function saveTasks(){
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+function addTask() {
+  if (taskInput.value.trim() === "") return;
+
+  const task = {
+    text: taskInput.value,
+    priority: prioritySelect.value,
+  };
+
+  tasks.push(task);
+  saveTasks();
+  renderTasks();
+
+  taskInput.value = "";
+  prioritySelect.value = "Media";
 }
 
-function loadTasks(){
-    const storedTasks = localStorage.getItem("tasks");
-
-    if(storedTasks){
-        tasks = JSON.parse(storedTasks);
-    }
-}
+addTaskBtn.addEventListener("click", addTask);
+filterSelect.addEventListener("change", renderTasks);
 
 loadTasks();
 renderTasks();

@@ -15,7 +15,7 @@ body {
 .container {
   background: #fff;
   padding: 20px;
-  width: 350px;
+  width: 400px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
@@ -62,4 +62,8 @@ li {
 
 li button {
   margin-left: 5px;
+}
+
+.filter-area{
+  margin-top: 10px;
 }
