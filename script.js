@@ -7,6 +7,12 @@ const filterStatus = document.getElementById("filterStatus");
 
 let tasks = [];
 
+const priorityOrder = {
+  Alta: 1,
+  Media: 2,
+  Baixa: 3
+}
+
 function loadTasks() {
   tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 }
@@ -25,6 +31,14 @@ function renderTasks() {
       (task) => task.priority === filterSelect.value,
     );
   }
+
+  filteredTasks.sort ((a, b) => {
+    if (a.completed !== b.completed){
+      return a.completed ? 1: -1;
+    }
+
+    return priorityOrder [a.priority] - priorityOrder[b.priority];
+  });
 
   if (filterStatus.value === "Pendentes") {
     filteredTasks = filteredTasks.filter((task) => !task.completed);
