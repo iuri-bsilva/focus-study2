@@ -77,8 +77,18 @@ function renderTasks() {
       span.style.opacity = "0.6";
     }
 
+    const completBtn = document.createElement ("button")
+    completBtn.textContent = task.completed ? "↩️" : "✔️";
+
+    completBtn.addEventListener ("click", () => {
+      task.completed = !task.completed;
+      saveTasks();
+      renderTasks();
+    });
+
     const editBtn = document.createElement("button");
     editBtn.textContent = "✏️";
+    editBtn.disabled = task.completed;
 
     editBtn.addEventListener("click", () => {
       const input = document.createElement("input");
@@ -102,6 +112,7 @@ function renderTasks() {
       li.appendChild(input);
       li.appendChild(select);
       li.appendChild(saveBtn);
+      li.appendChild(completBtn);
 
       input.focus();
 
@@ -116,6 +127,7 @@ function renderTasks() {
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") saveEdit();
       });
+      
     });
 
     const deleteBtn = document.createElement("button");
